@@ -1,0 +1,6 @@
+{
+    "name" : "Nic D'Haese API dev",
+    "dbUser": "postgres",
+    "dbPassword":"postgres",
+    "db":"postgres"
+}

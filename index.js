@@ -1,0 +1,48 @@
+const express=require('express');
+const Joi=require('joi');
+const config=require('config')
+const app= express();
+const {Pool}=require('pg')
+const DBMigrate=require('db-migrate')
+const dbConfig=require('./dbConfig')
+
+const users=require('./routes/users')
+
+const dbmigrate = DBMigrate.getInstance(true, {
+    config: dbConfig,
+    cmdOptions: {
+      'migrations-dir': './migrations' // adjust path if necessary
+    }
+  });
+
+  dbmigrate.up().then(() => {
+    console.log('Migrations complete.')});
+
+    
+
+app.use(express.json())
+app.use('/api/users',users)
+
+app.get('/',async (req,res)=>{
+    const client = await pool.connect();
+    //client.port
+   
+    client.release();
+    
+    res.send('Seems ok');
+})
+
+app.get('/api/test',(req,res)=>{
+    res.send(['test',1,2])
+}
+)
+
+app.get('/api/conf',(req,res)=>{
+    res.send(config.name)
+})
+
+
+
+
+const port =process.env.PORT||3000
+app.listen(port,()=>console.log(`Listening on port ${port}`));
