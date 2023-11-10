@@ -9,7 +9,7 @@ const bcrypt=require ('bcrypt')
 router.get('/',async(req,res)=>{
 
     try{
-        const users=await sequelize.query('SELECT * FROM users',{type:sequelize.QueryTypes.SELECT})
+        const users=await User.findAll()
         res.json(users)
     }catch(error){
         console.error('Error : ',error)

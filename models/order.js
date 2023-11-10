@@ -25,7 +25,7 @@ Order.init({
     content:{
         type:DataTypes.ARRAY(DataTypes.INTEGER)
     },
-    contentFromMenu:{
+    contentfrommenu:{
         type:DataTypes.ARRAY(DataTypes.INTEGER)
     },
     date:{
