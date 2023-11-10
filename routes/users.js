@@ -50,26 +50,36 @@ router.post('/',async(req,res)=>{
 })
 
 router.post('/login',async(req,res)=>{
-    const {email,password}=req.body
-
-    console.log(req.body)
-    console.log(password)
-
+    
+    const {mail,password}=req.body
+    
     
 
-    const user=await User.findOne({where:{email}})
+    const user=await User.findOne({
+        where:{
+            mail : mail
+        }
+    })
 
     if(!user){
         return res.status(401).json({message :'User not found'})
     }
 
-    const passwordMatch = await bcrypt.hash(password,user.password)
+    const passwordMatch=await bcrypt.compare(password,user.password)
 
     if(!passwordMatch){
         return res.status(401).json({message:'Incorrect password'})
     }
 
     return res.status(200).json({message:'Login successful'})
+})
+
+
+router.patch('/update/:id',async(req,res)=>{
+
+    
+    
+    return res.status(200)
 })
 
 function ValidateUser(user){

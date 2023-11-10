@@ -17,7 +17,7 @@ Order.init({
         references:{
             model:'user',
             key:'id',
-            deferrable:Sequelize.Deferrable.INITIALLY_IMMEDIATE,
+            //deferrable:Sequelize.Deferrable.INITIALLY_IMMEDIATE,
             onDelete:'CASCADE',
             onUpdate:'CASCADE'
         }

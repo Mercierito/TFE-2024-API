@@ -7,6 +7,10 @@ const DBMigrate=require('db-migrate')
 const dbConfig=require('./dbConfig')
 
 const users=require('./routes/users')
+const workers=require('./routes/workers')
+const menus=require('./routes/menus')
+const orders=require('./routes/orders')
+const courses=require('./routes/courses')
 
 const dbmigrate = DBMigrate.getInstance(true, {
     config: dbConfig,
@@ -22,6 +26,10 @@ const dbmigrate = DBMigrate.getInstance(true, {
 
 app.use(express.json())
 app.use('/api/users',users)
+app.use('/api/workers',workers)
+app.use('/api/menus/',menus)
+app.use('/api/orders/',orders)
+app.use('/api/courses/',courses)
 
 app.get('/',async (req,res)=>{
     const client = await pool.connect();
