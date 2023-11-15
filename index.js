@@ -11,6 +11,7 @@ const workers=require('./routes/workers')
 const menus=require('./routes/menus')
 const orders=require('./routes/orders')
 const courses=require('./routes/courses')
+const bills=require('./routes/bills')
 
 const dbmigrate = DBMigrate.getInstance(true, {
     config: dbConfig,
@@ -30,6 +31,7 @@ app.use('/api/workers',workers)
 app.use('/api/menus/',menus)
 app.use('/api/orders/',orders)
 app.use('/api/courses/',courses)
+app.use('/api/bills',bills)
 
 app.get('/',async (req,res)=>{
     const client = await pool.connect();
