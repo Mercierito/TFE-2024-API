@@ -33,14 +33,14 @@ app.use('/api/orders/',orders)
 app.use('/api/courses/',courses)
 app.use('/api/bills',bills)
 
-app.get('/',async (req,res)=>{
+/*app.get('/',async (req,res)=>{
     const client = await pool.connect();
     //client.port
    
     client.release();
     
     res.send('Seems ok');
-})
+})*/
 
 app.get('/api/test',(req,res)=>{
     res.send(['test',1,2])
