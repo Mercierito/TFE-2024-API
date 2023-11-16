@@ -16,6 +16,8 @@ router.get('/',async(req,res)=>{
     }
 })
 
+//get ID
+
 router.post('/',async (req,res)=>{
     try{
         const newCourse=await Course.create({
