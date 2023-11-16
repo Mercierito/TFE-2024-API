@@ -135,6 +135,39 @@ function generateExcel(res){
         size:11
     }
 
+    worksheet.getRow('18').height=30
+    worksheet.getColumn('H').width=11
+
+    worksheet.getCell('B18').value='Désignation'
+    worksheet.getCell('B18').font={
+        name:'Calibri',
+        size:11
+    }
+
+    worksheet.getCell('F18').value='Quantité'
+    worksheet.getCell('F18').font={
+        name:'Calibri',
+        size:11
+    }
+
+    worksheet.getCell('G18').value='P.U. TVAC'
+    worksheet.getCell('G18').font={
+        name:'Calibri',
+        size:11
+    }
+
+    worksheet.getCell('H18').value='Total TVAC'
+    worksheet.getCell('H18').font={
+        name:'Calibri',
+        size:11
+    }
+
+    worksheet.getCell('I18').value='Code TVA'
+    worksheet.getCell('I18').font={
+        name:'Calibri',
+        size:11
+    }
+
 
     
 
