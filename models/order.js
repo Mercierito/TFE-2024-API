@@ -28,6 +28,9 @@ Order.init({
     contentfrommenu:{
         type:DataTypes.ARRAY(DataTypes.INTEGER)
     },
+    menu:{
+        type:DataTypes.ARRAY(DataTypes.INTEGER)
+    },
     date:{
         type: DataTypes.DATE
     },

@@ -5,6 +5,7 @@ const config=require('config')
 const sequelize=require('../dbConnection')
 const {Bill}=require('../models/bill')
 const ExcelJS=require('exceljs')
+const{Order}=require('../models/order')
 
 router.get('/',async(req,res)=>{
     try{
