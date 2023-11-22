@@ -37,7 +37,7 @@ router.post('/',async(req,res)=>{
             pub:true,
             tva:'tva number',
             name:req.body.name,
-            address:'rue de la loge',
+            address:'rue de la loge 38,7866,Bois de Lessines',
             phoneNumber: req.body.phoneNumber
         });
 

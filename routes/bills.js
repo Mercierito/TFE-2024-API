@@ -6,6 +6,10 @@ const sequelize=require('../dbConnection')
 const {Bill}=require('../models/bill')
 const ExcelJS=require('exceljs')
 const{Order}=require('../models/order')
+const{User}=require('../models/user')
+const{Course}=require('../models/course')
+const{Menu}=require('../models/menu')
+const{format}=require('date-fns')
 
 router.get('/',async(req,res)=>{
     try{
@@ -17,27 +21,68 @@ router.get('/',async(req,res)=>{
     }
 })
 
-/*router.get('/:id',async(req,res)=>{
-    try{
-        const bill=await Bill.findByPk(req.params.id)
-        if(!bill){
-            res.status(404).send('Bill not found')
-        }else{
-            res.status(200).send(bill)
-        }
-    }catch(error){
-        console.log('Error : ',error)
-        res.status(500).send('Internal Server Error')
-    }
-})*/
 
-router.get('/file',(req,res)=>{
-    generateExcel(res)
+
+router.post('/file',(req,res)=>{
+    generateExcel(res,req)
 })
 
 
-function generateExcel(res){
+async function generateExcel(res,req){
     var workbook=new ExcelJS.Workbook()
+
+    
+
+    
+    
+    const date=new Date();
+    const currentYear=date.getFullYear().toString().slice(-2)
+    const formatedDate=format(date,'dd/MM/yyyy')
+
+    console.log(formatedDate)
+    console.log(currentYear)
+
+    var order=await Order.findOne({
+        where:{
+            id:req.body.orderId
+        }
+    })
+    var bill=await Bill.findOne({
+        where:{
+            orderId:order.id
+        }
+    })
+
+    var billNumber='yy-xxx'
+
+    if(!bill){
+
+        var bills=await Bill.findAll()
+        var lastBill=bills[bills.length-1]
+
+        var split=lastBill.billNumber.split('-')
+        if(currentYear!=split[0])
+        {
+            billNumber=`${currentYear}-001`
+        }else{
+            billNumber=`${currentYear}-${String(Number(split[1]) + 1).padStart(3, '0')}`
+        }
+        const newBill=await Bill.create({
+            billNumber:billNumber,
+            orderId:order.id
+        })
+    }
+    else{
+        billNumber=bill.billNumber
+    }
+
+    var user = await User.findOne({
+        where:{
+            id: order.userId
+        }
+    })
+
+    var splitAddress=user.address.split(',')
 
     var worksheet=workbook.addWorksheet('Sheet 1')
 
@@ -94,7 +139,7 @@ function generateExcel(res){
 
     worksheet.getRow('6').height=15
 
-    worksheet.getCell('E7').value='Nom'
+    worksheet.getCell('E7').value=user.name
     worksheet.getCell('E7').font={
         name:'Calibri',
         size:18,
@@ -102,7 +147,7 @@ function generateExcel(res){
     }
     worksheet.mergeCells('E7:H7')
 
-    worksheet.getCell('E9').value='rue'
+    worksheet.getCell('E9').value=splitAddress[0]
     worksheet.getCell('E9').font={
         name:'Calibri',
         size:14,
@@ -110,7 +155,7 @@ function generateExcel(res){
     }
     worksheet.mergeCells('E9:H9')
 
-    worksheet.getCell('E10').value='CP          COMMUNE'
+    worksheet.getCell('E10').value=splitAddress[1]+'          '+splitAddress[2]
     worksheet.getCell('E10').font={
         name:'Calibri',
         size:18,
@@ -118,13 +163,13 @@ function generateExcel(res){
     }
     worksheet.mergeCells('E10:H10')
 
-    worksheet.getCell('E13').value='Bois de Lessines, date'
+    worksheet.getCell('E13').value=`Bois de Lessines, ${formatedDate}`
     worksheet.getCell('E13').font={
         name:'Calibri',
         size:11
     }
 
-    worksheet.getCell('E15').value='Facture n°aa-xxx'
+    worksheet.getCell('E15').value=`Facture n°${billNumber}`
     worksheet.getCell('E15').font={
         name:'Calibri',
         size:11
@@ -173,10 +218,10 @@ function generateExcel(res){
     
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename=example.xlsx');
+    res.setHeader('Content-Disposition', `attachment; filename=${billNumber} facture.xlsx`);
 
 
-    workbook.xlsx.write(res).then(workbook.xlsx.writeFile('test.xlsx'))
+    workbook.xlsx.write(res).then(workbook.xlsx.writeFile(`${billNumber} facture.xlsx`))
         .then(function() {
             console.log('Excel file sent successfully');
             res.end();
