@@ -8,7 +8,10 @@ Menu.init({
         type:DataTypes.INTEGER,
         primaryKey:true,
         autoIncrement:true
-    },  
+    },
+    name:{
+        type:DataTypes.STRING
+    },
     options:{
         type:DataTypes.ARRAY(DataTypes.ARRAY(DataTypes.INTEGER))
     },

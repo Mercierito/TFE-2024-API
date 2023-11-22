@@ -29,11 +29,7 @@ router.post('/file',(req,res)=>{
 
 
 async function generateExcel(res,req){
-    var workbook=new ExcelJS.Workbook()
-
-    
-
-    
+    var workbook=new ExcelJS.Workbook()    
     
     const date=new Date();
     const currentYear=date.getFullYear().toString().slice(-2)
@@ -84,16 +80,7 @@ async function generateExcel(res,req){
 
     var splitAddress=user.address.split(',')
 
-    var worksheet=workbook.addWorksheet('Sheet 1')
-
-    var data = [
-        ['Name', 'Age', 'Country'],
-        ['John Doe', 25, 'USA'],
-        ['Jane Doe', 30, 'Canada'],
-        ['Bob Smith', 22, 'UK']
-    ]
-
-    //worksheet.addRows(data)
+    var worksheet=workbook.addWorksheet('Sheet 1')    
 
     worksheet.getColumn('A').width=2
 
@@ -213,6 +200,110 @@ async function generateExcel(res,req){
         name:'Calibri',
         size:11
     }
+
+    
+
+    const contentArray=[...new Set(order.content)]
+    const countMap={}
+    contentArray.forEach((item)=>{
+        countMap[item]=(countMap[item]||0)+1
+    })
+    
+    const startRow=20;
+    var i=0
+    for (const [key, value] of Object.entries(countMap)) {
+        
+        const course = await Course.findOne({
+          where: {
+            id: parseInt(key)
+          }
+        });
+      
+        const currentRow = startRow + i;
+      
+        worksheet.getCell(`B${currentRow}`).value = course.name;
+        worksheet.getCell(`B${currentRow}`).font = {
+          name: 'Calibri',
+          size: 11,
+          bold: true,
+        };
+        worksheet.getCell(`F${currentRow}`).value = value;
+        worksheet.getCell(`G${currentRow}`).value = course.price;
+        worksheet.getCell(`H${currentRow}`).value = course.price * value;
+        worksheet.getCell(`I${currentRow}`).value = 6;
+        i=i+1
+      }
+
+      const menuArray=[...new Set(order.menu)]
+      const menuMap={}
+      menuArray.forEach((item)=>{
+        menuMap[item]=(menuMap[item]||0)+1
+      })
+      for(const[key,value]of Object.entries(menuMap)){
+        const menu=await Menu.findOne({
+            where:{
+                id:parseInt(key)
+            }
+        })
+
+        const currentRow=startRow+i
+
+        worksheet.getCell(`B${currentRow}`).value = menu.name;
+        worksheet.getCell(`B${currentRow}`).font = {
+          name: 'Calibri',
+          size: 11,
+          bold: true,
+        };
+        worksheet.getCell(`F${currentRow}`).value = value;
+        worksheet.getCell(`G${currentRow}`).value = menu.price;
+        worksheet.getCell(`H${currentRow}`).value = menu.price * value;
+        worksheet.getCell(`I${currentRow}`).value = 6;
+        i=i+1
+      }
+
+      worksheet.getCell(`E${startRow+i+2}`).value='Tx TVA'
+      worksheet.getCell(`F${startRow+i+2}`).value='HTVA'
+      worksheet.getCell(`G${startRow+i+2}`).value='TVA'
+      worksheet.getCell(`H${startRow+i+2}`).value='TVAC'
+
+      
+      let sum=0
+
+      for(let j=startRow; j<=(startRow+i);j++){
+        const cellValue=worksheet.getCell(`H${j}`).value
+        if(typeof cellValue==='number'){
+            sum+=cellValue
+        }
+      }
+
+      worksheet.getCell(`E${startRow+i+3}`).value='6%'
+      worksheet.getCell(`F${startRow+i+3}`).value=(sum/1.06).toFixed(2)
+      worksheet.getCell(`G${startRow+i+3}`).value=(sum-(sum/1.06)).toFixed(2)
+      worksheet.getCell(`H${startRow+i+3}`).value=sum.toFixed(2)
+
+      worksheet.getCell(`E${startRow+i+5}`).value='Total à payer'
+      worksheet.getCell(`E${startRow+i+5}`).font={
+        name:'Calibri',
+        size:16,
+        bold:true,
+        underline:true
+      }
+
+      worksheet.getCell(`G${startRow+i+5}`).value=String(sum.toFixed(2))+'€'
+      worksheet.getCell(`G${startRow+i+5}`).font={
+        name:'Calibri',
+        size:16,
+        bold:true
+      }
+
+      worksheet.mergeCells(`G${startRow+i+5}:H${startRow+i+5}`)
+
+      worksheet.getCell(`A${startRow+i+7}`).value='En votre aimable règlement, dans les quinze jours dès réception'
+      worksheet.getCell(`A${startRow+i+7}`).font={
+        name:'Arial',
+        size:12,
+        bold:true
+      }
 
 
     

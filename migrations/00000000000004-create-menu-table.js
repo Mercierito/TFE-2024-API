@@ -11,6 +11,7 @@ exports.setup=function(options,seedLink){
 exports.up=function(db){
     return db.createTable('menus',{
         id:{type:'int',primaryKey: true,autoIncrement: true},
+        name:'string',
         options: 'int[][]',
         price:'int'
     })
