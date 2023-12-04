@@ -45,14 +45,14 @@ router.post('/login',async(req,res)=>{
     })
 
     if(!worker){
-        return res.status(401).json({message: 'Worker not found'})
+        return res.status(40).json({message: 'Worker not found'})
     }
     const passwordMatch=await bcrypt.compare(password,worker.password)
     if(!passwordMatch){
         return res.status(401).json({message:'Incorrect password'})
     }
 
-    return res.status(200).json({message:'Login Ok'})
+    return res.status(200).json(worker.id)
 })
 
 

@@ -4,7 +4,9 @@ const Joi= require('joi')
 const config=require('config')
 const sequelize=require('../dbConnection')
 const {Order}=require('../models/order')
-const bcrypt=require('bcrypt')
+const {User}=require('../models/user')
+const transporter=require('../nodemail')
+//const bcrypt=require('bcrypt')
 
 router.get('/',async(req,res)=>{
     try{
@@ -18,16 +20,63 @@ router.get('/',async(req,res)=>{
 
 //get ID
 
-router.post('/',async (req,res)=>{
-    try{
-        const newCourse=await Course.create({
-            name:req.body.name
-        })
+router.patch('/status',async(req,res)=>{
 
+    const statuses={
+        0:'en attente',
+        1:'acceptée',
+        2:'en cours de préparation',
+        3:'terminée',
+        4:'reçue par le client'
+    }
+
+    try{
+        const order=await Order.findOne({
+            where:{
+                id:req.body.id
+            }
+        })
+        if(order){
+            order.status=req.body.status
+            await order.save()
+            console.log('Order Status updated')
+            console.log(`La commande est maintenant ${statuses[order.status]}`)
+            
+            try{
+                const user=await User.findOne({
+                    where:{
+                        id:order.userId
+                    }
+                })
+                const to=user.mail
+                const message={
+                    
+                    to,
+                    subject:`Votre commande ${order.orderNumber} a changé de statut`,
+                    html:`
+                    <h3>Votre commande a changé de statut</h3>
+                    <p>Votre commande est maintenant ${statuses[order.status]}</p>
+                    <p>Ce mail a été généré automatiquement, veuillez ne pas y répondre</p>
+                    `
+                }
+                const info= await transporter.sendMail(message)
+                console.log('Mail sent ', info.messageId)
+
+            }catch(error){
+                console.error('Error sending mail ',error)
+
+            }
+            res.status(200).send(order)
+        }
+        else{
+            consolee.log('order not found')
+            return res.status(404).send('Order not found')
+        }
     }catch(error){
-        console.log('Error : ',error)
-        resizeTo.status(500).send('Internal Server Error')
+        console.error('Error updating status ', error)
+        res.status(500).send('Internal Server Error')
     }
 })
+
 
 module.exports=router;
