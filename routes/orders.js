@@ -18,7 +18,14 @@ router.get('/',async(req,res)=>{
     }
 })
 
-//get ID
+router.post('/',async(req,res)=>{
+    try{
+
+    }catch(error){
+        console.log('Error ',error)
+        resizeTo.status(500).send('Internal server error')
+    }
+})
 
 router.patch('/status',async(req,res)=>{
 

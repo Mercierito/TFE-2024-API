@@ -20,6 +20,9 @@ Bill.init({
             onDelete:'CASCADE',
             onUpdate:'CASCADE'
         }
+    },
+    dateGenerated:{
+        type: DataTypes.TEXT
     }
 },{
     sequelize,

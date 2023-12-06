@@ -33,10 +33,7 @@ async function generateExcel(res,req){
     
     const date=new Date();
     const currentYear=date.getFullYear().toString().slice(-2)
-    const formatedDate=format(date,'dd/MM/yyyy')
-
-    console.log(formatedDate)
-    console.log(currentYear)
+    var formatedDate=format(date,'dd/MM/yyyy')
 
     var order=await Order.findOne({
         where:{
@@ -45,7 +42,7 @@ async function generateExcel(res,req){
     })
     var bill=await Bill.findOne({
         where:{
-            orderId:order.id
+            orderId:req.body.orderId
         }
     })
 
@@ -55,21 +52,27 @@ async function generateExcel(res,req){
 
         var bills=await Bill.findAll()
         var lastBill=bills[bills.length-1]
-
-        var split=lastBill.billNumber.split('-')
-        if(currentYear!=split[0])
-        {
-            billNumber=`${currentYear}-001`
+        
+        if(lastBill){
+            var split=lastBill.billNumber.split('-')
+            if(currentYear!=split[0])
+            {
+                billNumber=`${currentYear}-001`
+            }else{
+                billNumber=`${currentYear}-${String(Number(split[1]) + 1).padStart(3, '0')}`
+            }
         }else{
-            billNumber=`${currentYear}-${String(Number(split[1]) + 1).padStart(3, '0')}`
+            billNumber=`${currentYear}-001`
         }
         const newBill=await Bill.create({
             billNumber:billNumber,
-            orderId:order.id
+            orderId:order.id,
+            dateGenerated:formatedDate
         })
     }
     else{
-        billNumber=bill.billNumber
+        billNumber=bill.billNumber,
+        formatedDate=bill.dateGenerated
     }
 
     var user = await User.findOne({

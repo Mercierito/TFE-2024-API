@@ -23,6 +23,9 @@ exports.up=function(db){
                 },
                 mapping:'id'
             }
+        },
+        dateGenerated:{
+            type:'string'
         }
     })
 }

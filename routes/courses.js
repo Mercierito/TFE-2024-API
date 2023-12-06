@@ -9,12 +9,12 @@ const{Op}=require('sequelize')
 
 router.post('/',async(req,res)=>{
     try{
-        const nexCourse=await Course.create({
+        const nextCourse=await Course.create({
             name: req.body.name,
             reheatInfo: req.body.name,
             price : req.body.price,
         })
-        res.status(201).send(nexCourse)
+        res.status(201).send(nextCourse)
     }catch(error){
         console.error('Error : ',error)
         res.status(500).send('Internal Server Error')
