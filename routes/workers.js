@@ -38,14 +38,15 @@ router.post('/',async(req,res)=>{
 router.post('/login',async(req,res)=>{
     const{name,password}=req.body
 
+
     const worker=await Worker.findOne({
         where:{
-            name: name
+            name: name.trim()
         }
     })
 
     if(!worker){
-        return res.status(40).json({message: 'Worker not found'})
+        return res.status(404).json({message: 'Worker not found'})
     }
     const passwordMatch=await bcrypt.compare(password,worker.password)
     if(!passwordMatch){
