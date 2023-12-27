@@ -20,10 +20,24 @@ router.get('/',async(req,res)=>{
 
 router.post('/',async(req,res)=>{
     try{
+        const{client,content,contentFromMenu,menus,status,date,address,type}=req.body
+        console.log(Date.parse(date))
+        const newOrder=await Order.create({
+            userId:client,
+            content:content,
+            contentfrommenu:contentFromMenu,
+            menu:menus,
+            status:status,
+            date:date,
+            address:address,
+            type:type
+        })
+
+        res.status(201).json(newOrder)
 
     }catch(error){
         console.log('Error ',error)
-        resizeTo.status(500).send('Internal server error')
+        res.status(500).send('Internal server error')
     }
 })
 

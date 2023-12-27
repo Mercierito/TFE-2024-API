@@ -27,7 +27,7 @@ exports.up=function(db){
         content:'int[]',
         contentfrommenu:'int[]',
         menu:'int[]',
-        date:'timestamp',
+        date:'date',
         status:'int',
         address:'string',
         type:'int',

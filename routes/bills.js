@@ -315,7 +315,7 @@ async function generateExcel(res,req){
     res.setHeader('Content-Disposition', `attachment; filename=${billNumber} facture.xlsx`);
 
 
-    workbook.xlsx.write(res).then(workbook.xlsx.writeFile(`${billNumber} facture.xlsx`))
+    workbook.xlsx.write(res).then(workbook.xlsx.writeFile(`${billNumber} facture.pdf`))
         .then(function() {
             console.log('Excel file sent successfully');
             res.end();
