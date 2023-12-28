@@ -1,8 +1,6 @@
 const express=require('express')
 const router= express.Router()
-const Joi= require('joi')
-const config=require('config')
-const sequelize=require('../dbConnection')
+const fs=require('fs').promises
 const {Bill}=require('../models/bill')
 const ExcelJS=require('exceljs')
 const{Order}=require('../models/order')
@@ -24,6 +22,7 @@ router.get('/',async(req,res)=>{
 
 
 router.post('/file',(req,res)=>{
+    
     generateExcel(res,req)
 })
 
@@ -313,24 +312,42 @@ async function generateExcel(res,req){
       }
 
 
+    const filename=`${billNumber} facture ${sum}.xlsx`
+    const filePath=`./factures/${filename}`
+
+    //res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    
     
 
+    try{
+        await fs.access('./factures')
+        
+
+    }catch(error){
+        await fs.mkdir('./factures')
+    }
+
+
+    try{
+        await workbook.xlsx.writeFile(filePath);
+    console.log('File written successfully');
+
+    // Send the file as a response
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', `attachment; filename=${billNumber} facture.xlsx`);
+    res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
 
+    // Stream the file to the response
+    const fileContent = await fs.readFile(filePath);
+    res.send(fileContent);
 
-    workbook.xlsx.write(res).then(workbook.xlsx.writeFile(`${billNumber} facture.xlsx`))
-        .then(function() {
-            console.log('Excel file sent successfully');
-            res.end();
-        })
-        .catch(function(error) {
-            console.error('Error sending Excel file:', error);
-            res.status(500).send('Internal Server Error');
-        });
+        
+        
 
-
-
+        
+    }catch(error){
+        console.error('Error handling file ',error)
+        res.status(500).send('Internal Server Error')
+    }
 }
 
 module.exports=router;
