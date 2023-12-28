@@ -10,7 +10,39 @@ const transporter=require('../nodemail')
 
 router.get('/',async(req,res)=>{
     try{
-        const orders=await Order.findAll()
+        let whereClause={}
+        
+        if(req.query.status!==undefined){
+            const status =parseInt(req.query.status,10)
+
+            if(!isNaN(status)&&status>=0&&status<=4){
+                whereClause={
+                    where:{
+                        status:status
+                    }
+                }
+            }else{
+                return res.status(400).send('Invalid Status parameter')
+            }
+        }
+
+        const orders=await Order.findAll(whereClause)
+        res.status(200).send(orders)
+    }catch(error){
+        console.log('Error : ',error)
+        res.status(500).send('Internal Server Error')
+    }
+})
+
+router.get('/byStatus',async(req,res)=>{
+    try{
+        console.log(typeof(req.body.status))
+        const orders=await Order.findAll({
+            where:{
+                status:parseInt(req.body.status)
+            }
+        })
+        console.log(orders)
         res.status(200).send(orders)
     }catch(error){
         console.log('Error : ',error)

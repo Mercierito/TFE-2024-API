@@ -205,12 +205,14 @@ async function generateExcel(res,req){
     }
 
     
-
-    const contentArray=[...new Set(order.content)]
+//fin de constante
+    
     const countMap={}
-    contentArray.forEach((item)=>{
+    order.content.forEach((item)=>{
         countMap[item]=(countMap[item]||0)+1
     })
+    
+    console.log(countMap)
     
     const startRow=20;
     var i=0
@@ -237,9 +239,9 @@ async function generateExcel(res,req){
         i=i+1
       }
 
-      const menuArray=[...new Set(order.menu)]
+      
       const menuMap={}
-      menuArray.forEach((item)=>{
+      order.menu.forEach((item)=>{
         menuMap[item]=(menuMap[item]||0)+1
       })
       for(const[key,value]of Object.entries(menuMap)){
@@ -248,6 +250,8 @@ async function generateExcel(res,req){
                 id:parseInt(key)
             }
         })
+
+
 
         const currentRow=startRow+i
 
@@ -315,7 +319,7 @@ async function generateExcel(res,req){
     res.setHeader('Content-Disposition', `attachment; filename=${billNumber} facture.xlsx`);
 
 
-    workbook.xlsx.write(res).then(workbook.xlsx.writeFile(`${billNumber} facture.pdf`))
+    workbook.xlsx.write(res).then(workbook.xlsx.writeFile(`${billNumber} facture.xlsx`))
         .then(function() {
             console.log('Excel file sent successfully');
             res.end();
