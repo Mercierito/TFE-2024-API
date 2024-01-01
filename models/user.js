@@ -1,7 +1,14 @@
 const{DataTypes,Model}=require('sequelize')
 const sequelize=require('../dbConnection')
+const jwt=require('jsonwebtoken')
 
-class User extends Model{}
+class User extends Model{
+    generateJWT(){
+
+        const token=jwt.sign({id:this.id},'privateKey')
+        return token;
+    }
+}
 
 User.init({
     id:{

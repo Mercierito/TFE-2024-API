@@ -12,6 +12,7 @@ const menus=require('./routes/menus')
 const orders=require('./routes/orders')
 const courses=require('./routes/courses')
 const bills=require('./routes/bills')
+const auth=require('./routes/auth')
 
 const dbmigrate = DBMigrate.getInstance(true, {
     config: dbConfig,
@@ -26,6 +27,7 @@ const dbmigrate = DBMigrate.getInstance(true, {
     
 
 app.use(express.json())
+app.use('/api/auth',auth)
 app.use('/api/users',users)
 app.use('/api/workers',workers)
 app.use('/api/menus/',menus)
