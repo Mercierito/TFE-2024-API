@@ -28,7 +28,7 @@ router.post('/',async(req,res)=>{
             password:hashedPassword,
             role:req.body.role
         })
-        res.status(201).json(newWorker)
+        res.status(201).json(newWorker.generateJWT())
     }catch(error){
         console.error('Error : ', error)
         res.status(500).send('Internal Server Error')
