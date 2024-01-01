@@ -23,22 +23,22 @@ router.get('/',async(req,res)=>{
 
 router.post('/',async(req,res)=>{
 
-    const {error}=ValidateUser(req.body)
+    //const {error}=ValidateUser(req.body)
 
-    if(error)return res.status(400).send(error.details[0].message)
+    //if(error)return res.status(400).send(error.details[0].message)
 
-     
+    console.log(req.body)
 
     try{
-        var hashedPassword=await bcrypt.hash(req.body.password,10);
+        //var hashedPassword=await bcrypt.hash(req.body.password,10);
         const newUser=await User.create({
-            mail:req.body.mail,
-            password:hashedPassword,
-            pub:true,
-            tva:'tva number',
-            name:req.body.name,
-            address:'rue de la loge 38,7866,Bois de Lessines',
-            phoneNumber: req.body.phoneNumber
+            mail:req.body.email,
+            password:'',
+            pub:req.body.acceptPub,
+            tva:req.body.tva,
+            name:req.body.nom,
+            address:`${req.body.adresse},${req.body.codePostal},${req.body.ville}`,
+            phoneNumber: req.body.telephone
         });
 
         res.status(201).json(newUser)
@@ -88,7 +88,7 @@ function ValidateUser(user){
     const schema=Joi.object({
         mail:Joi.string().email().required(),
         name:Joi.string().required(),
-        password: Joi.string().min(8).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/, 'password').message('Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character'),
+        //password: Joi.string().min(8).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/, 'password').message('Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character'),
         phoneNumber:Joi.string().min(9).required()
     })
 

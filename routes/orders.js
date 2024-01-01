@@ -5,6 +5,8 @@ const config=require('config')
 const sequelize=require('../dbConnection')
 const {Order}=require('../models/order')
 const {User}=require('../models/user')
+const{Course}=require('../models/course')
+const{Menu}=require('../models/menu')
 const transporter=require('../nodemail')
 //const bcrypt=require('bcrypt')
 
@@ -52,8 +54,76 @@ router.get('/byStatus',async(req,res)=>{
 
 router.post('/',async(req,res)=>{
     try{
+
+        const lastOrder=await Order.findOne({
+            order:[['id','DESC']]
+
+        })
+        const currentYear=new Date().getFullYear()
+        var orderNumber=currentYear%100
+
+        console.log('last 2 digit of year: ',orderNumber)
+
+        if(lastOrder){
+
+            const stringNumber=lastOrder.orderNumber.toString()
+            
+            if(stringNumber.includes(orderNumber.toString())){
+                
+                const splited=stringNumber.split(orderNumber.toString())
+                
+                orderNumber=orderNumber+(parseInt(splited[1])+1).toString()
+                
+            }else{
+                orderNumber=orderNumber.toString()+"1"
+                
+            }
+                      
+            
+            
+        }else{
+            orderNumber=orderNumber+"1"
+            
+        }
+
+        
+
+
         const{client,content,contentFromMenu,menus,status,date,address,type}=req.body
-        console.log(Date.parse(date))
+        
+        var price=0
+
+        try{
+            const Courses=await Course.findAll()
+            const Menus=await Menu.findAll()
+
+            content.forEach(id=>{
+                
+                const course=Courses.find((course)=>course.id===id)
+                
+                if(course){
+                    price+=course.price
+                }
+            })
+            
+            menus.forEach(id=>{
+                const menu=Menus.find(menu=>menu.id===id)
+                if(menu){
+                    price+=menu.price
+                }
+            })
+
+            console.log('Prix de la commande: ', price)
+
+
+            
+
+        }catch(error){
+
+            console.log('Error : ',error)
+
+        }
+
         const newOrder=await Order.create({
             userId:client,
             content:content,
@@ -62,7 +132,9 @@ router.post('/',async(req,res)=>{
             status:status,
             date:date,
             address:address,
-            type:type
+            type:type,
+            orderNumber:parseInt(orderNumber),
+            price:price
         })
 
         res.status(201).json(newOrder)
@@ -80,7 +152,8 @@ router.patch('/status',async(req,res)=>{
         1:'acceptée',
         2:'en cours de préparation',
         3:'terminée',
-        4:'reçue par le client'
+        4:'reçue par le client',
+        10 : 'refusée'
     }
 
     try{
@@ -109,6 +182,8 @@ router.patch('/status',async(req,res)=>{
                     html:`
                     <h3>Votre commande a changé de statut</h3>
                     <p>Votre commande est maintenant ${statuses[order.status]}</p>
+                    ${order.status===10 ? '<p>Malheureusement nous ne pouvons pas accepter votre commande, n\'hésitez pas à nous contacter par téléphone pour trouver une solution' : ''}
+                    ${order.status===3 && order.type===0? '<p>Votre commande vous attend dans notre chambre froide, vous pouvez venir l\'emporter dès maintenant</p>':''}
                     <p>Ce mail a été généré automatiquement, veuillez ne pas y répondre</p>
                     `
                 }
