@@ -6,7 +6,7 @@ class Worker extends Model{
 
     generateJWT(){
 
-        const token=jwt.sign({id:this.id},'privateKey')
+        const token=jwt.sign({id:this.id,isWorker:true,role:this.role},'privateKey')
         return token;
     }
 }

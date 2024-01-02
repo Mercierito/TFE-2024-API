@@ -1,6 +1,7 @@
 const express=require('express')
 const router= express.Router()
 const bcrypt=require('bcrypt')
+const _=require('lodash')
 
 const {Worker}=require('../models/worker')
 const {User}=require('../models/user')
@@ -28,7 +29,9 @@ router.post('/worker',async(req,res)=>{
         return res.status(401).json({message:'Incorrect username or password'})
     }
 
-    return res.status(200).json(worker.generateJWT())
+    const token=worker.generateJWT()
+
+    return res.status(200).header('x-auth-token',token).send(_.pick(worker,['id','name','role']))
 
     
 })
@@ -54,7 +57,9 @@ router.post('/user',async(req,res)=>{
         return res.status(401).json({message:'Incorrect password'})
     }
 
-    return res.status(200).json(user.generateJWT())
+    const token=user.generateJWT()
+
+    return res.status(200).header('x-auth-token',token).send(_.pick(user,['id','name']))
 })
 
 module.exports =router;

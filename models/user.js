@@ -5,7 +5,7 @@ const jwt=require('jsonwebtoken')
 class User extends Model{
     generateJWT(){
 
-        const token=jwt.sign({id:this.id},'privateKey')
+        const token=jwt.sign({id:this.id,isWorker:false},'privateKey')
         return token;
     }
 }

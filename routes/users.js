@@ -5,6 +5,7 @@ const config=require('config')
 const sequelize=require('../dbConnection')
 const{User}=require('../models/user')
 const bcrypt=require ('bcrypt')
+const _=require('lodash')
 
 router.get('/',async(req,res)=>{
 
@@ -46,7 +47,9 @@ router.post('/',async(req,res)=>{
             
         });
 
-        res.status(201).json(newUser.generateJWT())
+        const token=newUser.generateJWT()
+
+        res.status(201).header('x-auth-token',token).send(_.pick(newUser,['id','mail','anme']))
 
     }catch(error){ 
         console.error('Error: ',error)

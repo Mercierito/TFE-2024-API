@@ -5,8 +5,11 @@ const config=require('config')
 const sequelize=require('../dbConnection')
 const {Worker}=require('../models/worker')
 const bcrypt=require('bcrypt')
+const _=require('lodash')
+const auth=require('../middleware/auth')
+const role=require('../middleware/role')
 
-router.get('/',async(req,res)=>{
+router.get('/',[auth,role(0)],async(req,res)=>{
     try{
         const users=await Worker.findAll()
         res.json(users)
@@ -28,7 +31,9 @@ router.post('/',async(req,res)=>{
             password:hashedPassword,
             role:req.body.role
         })
-        res.status(201).json(newWorker.generateJWT())
+
+        const token=newWorker.generateJWT()
+        res.status(201).header('x-auth-token',token).json(_.pick(newWorker,['id','name','role']))
     }catch(error){
         console.error('Error : ', error)
         res.status(500).send('Internal Server Error')
