@@ -8,6 +8,7 @@ const {User}=require('../models/user')
 const{Course}=require('../models/course')
 const{Menu}=require('../models/menu')
 const transporter=require('../nodemail')
+const auth=require('../middleware/auth')
 //const bcrypt=require('bcrypt')
 
 router.get('/',async(req,res)=>{
@@ -52,7 +53,7 @@ router.get('/byStatus',async(req,res)=>{
     }
 })
 
-router.post('/',async(req,res)=>{
+router.post('/',auth,async(req,res)=>{
     try{
 
         const lastOrder=await Order.findOne({

@@ -6,12 +6,14 @@ const sequelize=require('../dbConnection')
 const {Course}=require('../models/course')
 const bcrypt=require('bcrypt')
 const{Op}=require('sequelize')
+const auth=require('../middleware/auth')
 
-router.post('/',async(req,res)=>{
+router.post('/',auth,async(req,res)=>{
     try{
+        console.log(req.body)
         const nextCourse=await Course.create({
             name: req.body.name,
-            reheatInfo: req.body.name,
+            reheatInfo: req.body.reheatInfo,
             price : req.body.price,
         })
         res.status(201).send(nextCourse)
@@ -21,7 +23,7 @@ router.post('/',async(req,res)=>{
     }
 })
 
-router.get('/',async(req,res)=>{
+router.get('/',auth,async(req,res)=>{
     try{
         const courses=await Course.findAll({
             where:{

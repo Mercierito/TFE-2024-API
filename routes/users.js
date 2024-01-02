@@ -6,12 +6,15 @@ const sequelize=require('../dbConnection')
 const{User}=require('../models/user')
 const bcrypt=require ('bcrypt')
 const _=require('lodash')
+const auth=require('../middleware/auth')
 
-router.get('/',async(req,res)=>{
+router.get('/',auth,async(req,res)=>{
 
     try{
         const users=await User.findAll()
-        res.json(users)
+        
+        
+        res.status(200).send(users)
     }catch(error){
         console.error('Error : ',error)
         res.status(500).send('Internal server errror')
@@ -59,33 +62,10 @@ router.post('/',async(req,res)=>{
     
 })
 
-router.post('/login',async(req,res)=>{
-    
-    const {mail,password}=req.body
-    
-    
-
-    const user=await User.findOne({
-        where:{
-            mail : mail
-        }
-    })
-
-    if(!user){
-        return res.status(401).json({message :'User not found'})
-    }
-
-    const passwordMatch=await bcrypt.compare(password,user.password)
-
-    if(!passwordMatch){
-        return res.status(401).json({message:'Incorrect password'})
-    }
-
-    return res.status(200).json({message:'Login successful'})
-})
 
 
-router.patch('/update/:id',async(req,res)=>{
+
+router.patch('/update/me',auth,async(req,res)=>{
 
     
     

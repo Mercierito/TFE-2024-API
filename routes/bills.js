@@ -8,8 +8,9 @@ const{User}=require('../models/user')
 const{Course}=require('../models/course')
 const{Menu}=require('../models/menu')
 const{format}=require('date-fns')
+const auth=require('../middleware/auth')
 
-router.get('/',async(req,res)=>{
+router.get('/',auth,async(req,res)=>{
     try{
         const bills=await Bill.findAll()
         res.status(200).send(bills)
@@ -21,7 +22,7 @@ router.get('/',async(req,res)=>{
 
 
 
-router.post('/file',(req,res)=>{
+router.post('/file',auth,(req,res)=>{
     
     generateExcel(res,req)
 })
