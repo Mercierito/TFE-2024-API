@@ -1,8 +1,6 @@
 const express=require('express')
 const router= express.Router()
-const Joi= require('joi')
-const config=require('config')
-const sequelize=require('../dbConnection')
+
 const {Order}=require('../models/order')
 const {User}=require('../models/user')
 const{Course}=require('../models/course')
@@ -91,6 +89,7 @@ router.post('/',auth,async(req,res)=>{
 
 
         const{client,content,contentFromMenu,menus,status,date,address,type}=req.body
+        console.log(req.body)
         
         var price=0
 

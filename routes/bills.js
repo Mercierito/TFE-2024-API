@@ -10,7 +10,7 @@ const{Menu}=require('../models/menu')
 const{format}=require('date-fns')
 const auth=require('../middleware/auth')
 
-router.get('/',auth,async(req,res)=>{
+router.get('/bills',auth,async(req,res)=>{
     try{
         const bills=await Bill.findAll()
         res.status(200).send(bills)
@@ -22,7 +22,7 @@ router.get('/',auth,async(req,res)=>{
 
 
 
-router.post('/file',auth,(req,res)=>{
+router.post('/bill',auth,(req,res)=>{
     
     generateExcel(res,req)
 })

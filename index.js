@@ -33,7 +33,7 @@ app.use('/api/workers',workers)
 app.use('/api/menus/',menus)
 app.use('/api/orders/',orders)
 app.use('/api/courses/',courses)
-app.use('/api/bills',bills)
+app.use('/api/files',bills)
 
 /*app.get('/',async (req,res)=>{
     const client = await pool.connect();
