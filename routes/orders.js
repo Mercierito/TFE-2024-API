@@ -1,6 +1,5 @@
 const express=require('express')
 const router= express.Router()
-
 const {Order}=require('../models/order')
 const {User}=require('../models/user')
 const{Course}=require('../models/course')
@@ -9,7 +8,7 @@ const transporter=require('../nodemail')
 const auth=require('../middleware/auth')
 //const bcrypt=require('bcrypt')
 
-router.get('/',async(req,res)=>{
+router.get('/',auth,async(req,res)=>{
     try{
         let whereClause={}
         
@@ -27,7 +26,7 @@ router.get('/',async(req,res)=>{
             }
         }
 
-        const orders=await Order.findAll(whereClause)
+        const orders=await Order.findAll({whereClause,order:[['orderNumber','ASC']]})
         res.status(200).send(orders)
     }catch(error){
         console.log('Error : ',error)
@@ -81,26 +80,17 @@ router.post('/',auth,async(req,res)=>{
             
             
         }else{
-            orderNumber=orderNumber+"1"
-            
+            orderNumber=orderNumber+"1"            
         }
 
-        
-
-
         const{client,content,contentFromMenu,menus,status,date,address,type}=req.body
-        console.log(req.body)
-        
+        console.log(req.body)        
         var price=0
-
         try{
             const Courses=await Course.findAll()
             const Menus=await Menu.findAll()
-
-            content.forEach(id=>{
-                
-                const course=Courses.find((course)=>course.id===id)
-                
+            content.forEach(id=>{                
+                const course=Courses.find((course)=>course.id===id)                
                 if(course){
                     price+=course.price
                 }
@@ -113,15 +103,10 @@ router.post('/',auth,async(req,res)=>{
                 }
             })
 
-            console.log('Prix de la commande: ', price)
-
-
-            
+            console.log('Prix de la commande: ', price)           
 
         }catch(error){
-
             console.log('Error : ',error)
-
         }
 
         const newOrder=await Order.create({
@@ -152,7 +137,7 @@ router.patch('/status',async(req,res)=>{
         1:'acceptée',
         2:'en cours de préparation',
         3:'terminée',
-        4:'reçue par le client',
+        4:'reçue',
         10 : 'refusée'
     }
 
