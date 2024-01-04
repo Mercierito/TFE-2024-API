@@ -6,14 +6,16 @@ const{Course}=require('../models/course')
 const{Menu}=require('../models/menu')
 const transporter=require('../nodemail')
 const auth=require('../middleware/auth')
+const {Op}=require('sequelize')
 //const bcrypt=require('bcrypt')
 
 router.get('/',auth,async(req,res)=>{
     try{
         let whereClause={}
-        
+        console.log(req.query.status)
         if(req.query.status!==undefined){
             const status =parseInt(req.query.status,10)
+            console.log(status)
 
             if(!isNaN(status)&&status>=0&&status<=4){
                 whereClause={
@@ -25,8 +27,9 @@ router.get('/',auth,async(req,res)=>{
                 return res.status(400).send('Invalid Status parameter')
             }
         }
+        console.log(whereClause)
 
-        const orders=await Order.findAll({whereClause,order:[['orderNumber','ASC']]})
+        const orders=await Order.findAll()
         res.status(200).send(orders)
     }catch(error){
         console.log('Error : ',error)
@@ -34,21 +37,44 @@ router.get('/',auth,async(req,res)=>{
     }
 })
 
-router.get('/byStatus',async(req,res)=>{
-    try{
-        console.log(typeof(req.body.status))
-        const orders=await Order.findAll({
-            where:{
-                status:parseInt(req.body.status)
-            }
-        })
-        console.log(orders)
+router.get('/waiting',auth,async(req,res)=>{
+    try{   
+        
+
+        const orders=await Order.findAll({where:{status:0}})
         res.status(200).send(orders)
     }catch(error){
         console.log('Error : ',error)
         res.status(500).send('Internal Server Error')
     }
 })
+
+router.get('/done',auth,async(req,res)=>{
+    try{   
+        
+
+        const orders=await Order.findAll({where:{status:4}})
+        res.status(200).send(orders)
+    }catch(error){
+        console.log('Error : ',error)
+        res.status(500).send('Internal Server Error')
+    }
+})
+router.get('/working',auth,async(req,res)=>{
+    try{   
+        
+
+        const orders=await Order.findAll({where:{status:{
+            [Op.not]:[0,4]
+        }}})
+        res.status(200).send(orders)
+    }catch(error){
+        console.log('Error : ',error)
+        res.status(500).send('Internal Server Error')
+    }
+})
+
+
 
 router.post('/',auth,async(req,res)=>{
     try{
