@@ -11,23 +11,7 @@ const {Op}=require('sequelize')
 
 router.get('/',auth,async(req,res)=>{
     try{
-        let whereClause={}
-        console.log(req.query.status)
-        if(req.query.status!==undefined){
-            const status =parseInt(req.query.status,10)
-            console.log(status)
-
-            if(!isNaN(status)&&status>=0&&status<=4){
-                whereClause={
-                    where:{
-                        status:status
-                    }
-                }
-            }else{
-                return res.status(400).send('Invalid Status parameter')
-            }
-        }
-        console.log(whereClause)
+        
 
         const orders=await Order.findAll()
         res.status(200).send(orders)
@@ -66,7 +50,9 @@ router.get('/working',auth,async(req,res)=>{
 
         const orders=await Order.findAll({where:{status:{
             [Op.not]:[0,4]
-        }}})
+        }},
+        order:[['orderNumber','ASC']]
+    })
         res.status(200).send(orders)
     }catch(error){
         console.log('Error : ',error)
