@@ -60,6 +60,17 @@ router.get('/working',auth,async(req,res)=>{
     }
 })
 
+router.post('/history',auth,async(req,res)=>{
+    try{
+        console.log(req.body)
+        const orders=await Order.findAll({where:{userId:req.body.userId},order:[['orderNumber','ASC']]})
+        res.status(200).send(orders)
+    }catch(error){
+        console.log('Error: ',error)
+        res.status(500).send('Internal Server Error')
+    }
+})
+
 
 
 router.post('/',auth,async(req,res)=>{
