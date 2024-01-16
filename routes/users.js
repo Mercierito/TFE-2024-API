@@ -7,6 +7,7 @@ const{User}=require('../models/user')
 const bcrypt=require ('bcrypt')
 const _=require('lodash')
 const auth=require('../middleware/auth')
+const transporter=require('../nodemail')
 
 router.get('/',auth,async(req,res)=>{
 
@@ -70,6 +71,48 @@ router.patch('/update/me',auth,async(req,res)=>{
     
     
     return res.status(200)
+})
+
+router.post('/sendAd',auth,async(req,res)=>{
+    console.log('got hit')
+    console.log(req.body.text)
+    console.log(req.body.file)
+
+    try{
+    
+        const users=await User.findAll({
+            where:{
+                pub:true
+            }
+        })
+        const message={
+            
+            subject:`test mail`,
+            html:`
+            <p>${req.body.text}</p>
+            `
+        }   
+        if(req.body.file){
+            const fileContent=Buffer.from(req.body.file,'base64')      
+            message.attachments=[{
+                filename:req.body.fileName,
+                content:fileContent,
+                encoding:'base64'
+            }]
+        }     
+
+        for(const user of users){
+            const to=user.mail  
+            message.to=to        
+            
+            const info=await transporter.sendMail(message)
+            console.log('Mail sent to: ',user.name)
+        }
+        res.status(200).send("All mail sent")
+    }catch(error){
+        console.error(error)
+        res.status(500).send('Internal server Error')
+    }   
 })
 
 function ValidateUser(user){

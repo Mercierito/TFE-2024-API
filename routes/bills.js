@@ -334,7 +334,7 @@ async function generateExcel(res,req){
     console.log('File written successfully');
 
     // Send the file as a response
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    //res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
 
     // Stream the file to the response

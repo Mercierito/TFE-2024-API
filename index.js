@@ -26,7 +26,7 @@ const dbmigrate = DBMigrate.getInstance(true, {
 
     
 
-app.use(express.json())
+app.use(express.json({limit:'10mb'}))
 app.use('/api/auth',auth)
 app.use('/api/users',users)
 app.use('/api/workers',workers)

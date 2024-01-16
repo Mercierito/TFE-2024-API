@@ -9,6 +9,11 @@ const _=require('lodash')
 const auth=require('../middleware/auth')
 const role=require('../middleware/role')
 
+
+
+
+
+
 router.get('/',[auth,role(0)],async(req,res)=>{
     try{
         const users=await Worker.findAll()
