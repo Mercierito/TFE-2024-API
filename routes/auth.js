@@ -41,17 +41,21 @@ router.post('/user',async(req,res)=>{
     const {mail,password}=req.body
     console.log('enteting')
     console.log(req.body)
+    console.log(!password)
     
     if(!mail||!password)return res.status(400)
 
     const user=await User.findOne({
+        
         where:{
             mail : mail
         }
     })
+    console.log(user)
 
     if(!user){
-        return res.status(401).json({message :'User not found or Incorrect password'})
+        console.log('user found')
+        return res.status(404).json({message :'User not found or Incorrect password'})
     }
 
     const passwordMatch=await bcrypt.compare(password,user.password)

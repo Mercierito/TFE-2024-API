@@ -26,11 +26,7 @@ router.get('/',auth,async(req,res)=>{
 
 
 
-router.post('/',async(req,res)=>{
-
-    //const {error}=ValidateUser(req.body)
-
-    //if(error)return res.status(400).send(error.details[0].message)
+router.post('/',async(req,res)=>{   
 
     console.log(req.body)
     var password=''
@@ -63,6 +59,66 @@ router.post('/',async(req,res)=>{
     }
     
     
+})
+
+router.put('/',async(req,res)=>{
+    console.log(req.body)
+
+    try{
+        const existingUser=await User.findOne({
+            where:{
+                name:req.body.nom,
+                mail:req.body.email,
+                address:`${req.body.adresse},${req.body.codePostal},${req.body.ville}`
+            }
+        })
+
+        var password
+
+        if(req.body.password){
+             password=await bcrypt.hash(req.body.password,10)
+        }else{
+            return res.status(400).send('Bad request')
+        }
+        
+        if(existingUser){
+            if(existingUser.password===''){
+                            
+
+                    const updatedUser=await existingUser.update({
+                        mail:req.body.email,
+                        password:password,
+                        pub:req.body.acceptPub,
+                        tva:req.body.tva,
+                        name:req.body.nom,
+                        address:`${req.body.adresse},${req.body.codePostal},${req.body.ville}`,
+                        phoneNumber: req.body.telephone
+                    })
+
+                    return res.status(201).send(updatedUser)
+                
+            }else{
+                return res.status(409).send('User already exists')
+            }
+        }else{
+            const newUser=await User.create({
+                mail:req.body.email,
+                password:password,
+                pub:req.body.acceptPub,
+                tva:req.body.tva,
+                name:req.body.nom,
+                address:`${req.body.adresse},${req.body.codePostal},${req.body.ville}`,
+                phoneNumber: req.body.telephone
+            })
+
+            return res.status(201).send(newUser)
+        }
+
+
+
+    }catch(error){
+
+    }
 })
 
 router.get('/me',auth,async(req,res)=>{
