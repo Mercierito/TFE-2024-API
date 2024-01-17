@@ -95,7 +95,10 @@ router.put('/',async(req,res)=>{
                         phoneNumber: req.body.telephone
                     })
 
-                    return res.status(201).send(updatedUser)
+                    const token=existingUser.generateJWT()
+                    console.log('TOKEN: ',token)
+
+                    res.status(201).header('x-auth-token',token).send(_.pick(existingUser,['id','mail','name']))
                 
             }else{
                 return res.status(409).send('User already exists')
@@ -111,7 +114,11 @@ router.put('/',async(req,res)=>{
                 phoneNumber: req.body.telephone
             })
 
-            return res.status(201).send(newUser)
+            
+            const token=newUser.generateJWT()
+            console.log('TOKEN: ',token)
+
+            return res.status(201).header('x-auth-token',token).send(_.pick(newUser,['id','mail','name']))
         }
 
 
