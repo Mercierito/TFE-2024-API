@@ -37,6 +37,7 @@ router.post('/',async(req,res)=>{
     if(req.body.password){
         password=await bcrypt.hash(req.body.password,10)
     }
+    console.log('PASSWORD: ',password)
 
     try{
         
@@ -45,21 +46,47 @@ router.post('/',async(req,res)=>{
             password:password,
             pub:req.body.acceptPub,
             tva:req.body.tva,
-            name:req.body.name,
+            name:req.body.nom,
             address:`${req.body.adresse},${req.body.codePostal},${req.body.ville}`,
-            phoneNumber: req.body.phoneNumber
+            phoneNumber: req.body.telephone
             
         });
 
         const token=newUser.generateJWT()
+        console.log('TOKEN: ',token)
 
-        res.status(201).header('x-auth-token',token).send(_.pick(newUser,['id','mail','anme']))
+        res.status(201).header('x-auth-token',token).send(_.pick(newUser,['id','mail','name']))
 
     }catch(error){ 
         console.error('Error: ',error)
         res.status(500).send('Internal Server Error')
     }
     
+    
+})
+
+router.get('/me',auth,async(req,res)=>{
+
+
+    try{
+        const user=await User.findOne({
+            where:{
+                id:req.decodedToken.id
+            }
+        })
+        const responseData = {
+            ..._.pick(user, ['mail', 'name', 'address','phoneNumber','pub']),
+            ...(user.tva && { tva: user.tva }),  // Include 'tva' only if it exists in the user object
+        };
+        return res.status(200).send(responseData)
+
+        
+
+    }catch(error){
+        console.error('Error: ',error)
+        res.status(500).send('Internal Server Error')
+    }
+
     
 })
 
@@ -87,7 +114,7 @@ router.post('/sendAd',auth,async(req,res)=>{
         })
         const message={
             
-            subject:`test mail`,
+            subject:req.body.object,
             html:`
             <p>${req.body.text}</p>
             `

@@ -5,6 +5,7 @@ module.exports=function auth(req,res,next){
     if(!token) return res.status(401).send('Access denied No token provided')
     
     try{
+        
         const decoded=jwt.verify(token,'privateKey')
         //console.log(decoded)
         req.decodedToken=decoded
@@ -12,6 +13,7 @@ module.exports=function auth(req,res,next){
         //console.log('Auth middlewere: ',req.decodedToken)
         next()
     }catch(error){
+        
         res.status(400).send('Invalid token')
     }
 }

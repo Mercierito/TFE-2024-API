@@ -5,7 +5,7 @@ const {Menu}=require('../models/menu')
 
 const auth=require('../middleware/auth')
 
-router.get('/',auth,async(req,res)=>{
+router.get('/',async(req,res)=>{
     try{
         const courses=await Menu.findAll()
         res.status(200).send(courses)

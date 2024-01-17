@@ -13,6 +13,7 @@ const orders=require('./routes/orders')
 const courses=require('./routes/courses')
 const bills=require('./routes/bills')
 const auth=require('./routes/auth')
+const cors=require('cors')
 
 const dbmigrate = DBMigrate.getInstance(true, {
     config: dbConfig,
@@ -25,7 +26,12 @@ const dbmigrate = DBMigrate.getInstance(true, {
     console.log('Migrations complete.')});
 
     
-
+app.use(cors({
+  origin:'*',
+  methods:'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials:true,
+  exposedHeaders:['x-auth-token']
+}))
 app.use(express.json({limit:'10mb'}))
 app.use('/api/auth',auth)
 app.use('/api/users',users)
@@ -56,5 +62,5 @@ app.get('/api/conf',(req,res)=>{
 
 
 
-const port =process.env.PORT||3000
+const port =process.env.PORT||7864
 app.listen(port,()=>console.log(`Listening on port ${port}`));

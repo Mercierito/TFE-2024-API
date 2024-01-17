@@ -75,6 +75,7 @@ router.post('/history',auth,async(req,res)=>{
 
 router.post('/',auth,async(req,res)=>{
     try{
+        console.log('try get orders to make order number')
 
         const lastOrder=await Order.findOne({
             order:[['id','DESC']]
@@ -110,6 +111,7 @@ router.post('/',auth,async(req,res)=>{
         console.log(req.body)        
         var price=0
         try{
+            console.log('try cost')
             const Courses=await Course.findAll()
             const Menus=await Menu.findAll()
             content.forEach(id=>{                
@@ -131,6 +133,8 @@ router.post('/',auth,async(req,res)=>{
         }catch(error){
             console.log('Error : ',error)
         }
+
+        console.log('pre create order')
 
         const newOrder=await Order.create({
             userId:client,

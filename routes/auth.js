@@ -39,6 +39,8 @@ router.post('/worker',async(req,res)=>{
 
 router.post('/user',async(req,res)=>{
     const {mail,password}=req.body
+    console.log('enteting')
+    console.log(req.body)
     
     if(!mail||!password)return res.status(400)
 
@@ -49,13 +51,13 @@ router.post('/user',async(req,res)=>{
     })
 
     if(!user){
-        return res.status(401).json({message :'User not found'})
+        return res.status(401).json({message :'User not found or Incorrect password'})
     }
 
     const passwordMatch=await bcrypt.compare(password,user.password)
 
     if(!passwordMatch){
-        return res.status(401).json({message:'Incorrect password'})
+        return res.status(401).json({message:'User not found or Incorrect password'})
     }
 
     const token=user.generateJWT()
