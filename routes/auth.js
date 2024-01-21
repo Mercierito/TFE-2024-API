@@ -43,30 +43,39 @@ router.post('/user',async(req,res)=>{
     console.log(req.body)
     console.log(!password)
     
-    if(!mail||!password)return res.status(400)
+    if(!mail||!password||password===''){
+        console.log('in if')
+        return res.status(400).send('Bad Request')}
 
-    const user=await User.findOne({
+    try{
+        console.log('in try too')
+        const user=await User.findOne({
         
-        where:{
-            mail : mail
+            where:{
+                mail : mail
+            }
+        })
+        console.log(user)
+    
+        if(!user){
+            console.log('user found')
+            return res.status(404).json({message :'User not found or Incorrect password'})
         }
-    })
-    console.log(user)
+    
+        const passwordMatch=await bcrypt.compare(password,user.password)
+    
+        if(!passwordMatch){
+            return res.status(401).json({message:'User not found or Incorrect password'})
+        }
+    
+        const token=user.generateJWT()
+    
+        return res.status(200).header('x-auth-token',token).send(_.pick(user,['id','name']))
+    }catch(error){
 
-    if(!user){
-        console.log('user found')
-        return res.status(404).json({message :'User not found or Incorrect password'})
     }
 
-    const passwordMatch=await bcrypt.compare(password,user.password)
-
-    if(!passwordMatch){
-        return res.status(401).json({message:'User not found or Incorrect password'})
-    }
-
-    const token=user.generateJWT()
-
-    return res.status(200).header('x-auth-token',token).send(_.pick(user,['id','name']))
+    
 })
 
 module.exports =router;

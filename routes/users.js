@@ -139,7 +139,7 @@ router.get('/me',auth,async(req,res)=>{
         })
         const responseData = {
             ..._.pick(user, ['mail', 'name', 'address','phoneNumber','pub']),
-            ...(user.tva && { tva: user.tva }),  // Include 'tva' only if it exists in the user object
+            ...(user.tva && { tva: user.tva }),  
         };
         return res.status(200).send(responseData)
 
