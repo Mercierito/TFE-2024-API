@@ -156,11 +156,63 @@ router.get('/me',auth,async(req,res)=>{
 
 
 
-router.patch('/update/me',auth,async(req,res)=>{
+router.patch('/me',auth,async(req,res)=>{
 
+    console.log('BODY: ',req.body)
+
+    try{
+
+        var user = await User.findByPk(req.decodedToken.id);
+      
+
+        // Check if the user was found
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+
+        // Update individual fields based on the request body
+        if (req.body.nom) {
+            user.name= req.body.nom;
+           
+        }
+        if (req.body.email) {
+            user.mail = req.body.email;
+        }
+        if(req.body.tva){
+            user.tva=req.body.tva
+        }
+        if(req.body.telephone){
+            console.log('PHONE NUM: ',typeof(req.body.telephone))
+            user.phoneNumber=req.body.telephone
+        }
+        if(req.body.adresse){
+            user.address=`${req.body.adresse},${req.body.codePostal},${req.body.ville}`
+        }
+        if(req.body.password!==''){
+            var  password=await bcrypt.hash(req.body.password,10)
+            user.password=password
+        }
+        if(req.body.acceptPub!==null){
+            user.pub=req.body.acceptPub
+            console.log('USER Pub: ',user.pub)
+        }
+
+        console.log('Before save: ',user)
+        
+        await user.save();
+        
+        
+
+        console.log('Updated User',user)
+        return res.status(200).json(user);
+        
+
+    }catch(error){
+        console.log(error)
+        return res.status(500).send('Internal server error')
+    }
     
     
-    return res.status(200)
 })
 
 router.post('/sendAd',auth,async(req,res)=>{

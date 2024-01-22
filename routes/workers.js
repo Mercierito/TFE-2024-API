@@ -23,6 +23,35 @@ router.get('/',[auth,role(0)],async(req,res)=>{
         res.status(500).send('Internal server error')
     }
 })
+router.get('/me',auth,async(req,res)=>{
+    try{
+        var worker = await Worker.findByPk(req.decodedToken.id)
+        const responseData={
+            ..._.pick(worker,['name'])
+        }
+        return res.status(200).send(responseData)
+    }catch(error){
+        console.error('Error: ',error)
+        res.status(500).send('Internal Server Error')
+    }
+})
+
+router.patch('/me',auth,async(req,res)=>{
+    try{
+        console.log(req.body)
+        var worker = await Worker.findByPk(req.decodedToken.id)
+        if(!worker){
+            return res.status(404).send('User not found')
+        }
+        if(req.body.nom){
+            worker.name=req.body.nom
+        }
+        await worker.save()
+        return res.status(200).json(worker)
+    }catch(error){
+        return res.status(500).send('Internal Server Error')        
+    }
+})
 
 
 router.post('/',async(req,res)=>{
