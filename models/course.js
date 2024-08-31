@@ -17,6 +17,10 @@ Course.init({
     },
     price:{
         type:DataTypes.INTEGER
+    },
+    visibility:{
+        type:DataTypes.BOOLEAN,
+        defaultValue:true
     }
 },{
     sequelize,

@@ -18,6 +18,7 @@ User.init({
     },
     mail:{
         type: DataTypes.STRING,
+        unique:true,
         allowNull:false
     },
     name:{
@@ -43,6 +44,10 @@ User.init({
     address:{
         type: DataTypes.STRING,
         allowNull:false
+    },
+    visibility:{
+        type:DataTypes.BOOLEAN,
+        defaultValue:true
     }
 },{
     sequelize,

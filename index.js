@@ -14,8 +14,9 @@ const courses=require('./routes/courses')
 const bills=require('./routes/bills')
 const auth=require('./routes/auth')
 const cors=require('cors')
+const{sequelize}=require('./models/models')
 
-const dbmigrate = DBMigrate.getInstance(true, {
+/*const dbmigrate = DBMigrate.getInstance(true, {
     config: dbConfig,
     cmdOptions: {
       'migrations-dir': './migrations' // adjust path if necessary
@@ -23,7 +24,31 @@ const dbmigrate = DBMigrate.getInstance(true, {
   });
 
   dbmigrate.up().then(() => {
-    console.log('Migrations complete.')});
+    console.log('Migrations complete.')});*/
+
+    sequelize.sync({alter:true})
+    .then(async() => {
+      console.log('Database synchronized.');
+      const [results, metadata] = await sequelize.query(`
+        SELECT
+            ccu.column_name,
+            tc.constraint_name,
+            tc.constraint_type
+        FROM 
+            information_schema.table_constraints AS tc 
+            JOIN information_schema.constraint_column_usage AS ccu 
+            ON tc.constraint_name = ccu.constraint_name
+        WHERE 
+            tc.table_name = 'users' AND
+            tc.constraint_type = 'UNIQUE';
+    `);
+
+    console.log(results);
+      // You can start your server or perform other actions here.
+    })
+    .catch((error) => {
+      console.error('Error synchronizing database:', error);
+    });
 
     
 app.use(cors({

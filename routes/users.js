@@ -3,17 +3,17 @@ const router=express.Router()
 const Joi=require('joi')
 const config=require('config')
 const sequelize=require('../dbConnection')
-const{User}=require('../models/user')
+const{User}=require('../models/models')
 const bcrypt=require ('bcrypt')
 const _=require('lodash')
 const auth=require('../middleware/auth')
 const transporter=require('../nodemail')
+const authMiddleware=require('../middleware/authMiddleware')
 
-router.get('/',auth,async(req,res)=>{
+router.get('/',authMiddleware.auth,async(req,res)=>{
 
     try{
-        const users=await User.findAll()
-        
+        const users=await User.findAll()        
         
         res.status(200).send(users)
     }catch(error){

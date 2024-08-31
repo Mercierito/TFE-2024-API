@@ -3,14 +3,15 @@ const router= express.Router()
 const fs=require('fs').promises
 const {Bill}=require('../models/bill')
 const ExcelJS=require('exceljs')
-const{Order}=require('../models/order')
-const{User}=require('../models/user')
-const{Course}=require('../models/course')
-const{Menu}=require('../models/menu')
+const{Order,User,Course,Menu}=require('../models/models')
+//const{User}=require('../models/user')
+//const{Course}=require('../models/course')
+//const{Menu}=require('../models/menu')
 const{format}=require('date-fns')
 const auth=require('../middleware/auth')
+const authMiddleware=require('../middleware/authMiddleware')
 
-router.get('/bills',auth,async(req,res)=>{
+router.get('/bills',authMiddleware.auth,async(req,res)=>{
     try{
         const bills=await Bill.findAll()
         res.status(200).send(bills)
@@ -20,14 +21,41 @@ router.get('/bills',auth,async(req,res)=>{
     }
 })
 
+router.post('/kitchen',auth,async(req,res)=>{
+    console.log('ENTRERING')
+    try{
+        console.log(req.body)
+        const order=await Order.findByPk(req.body.order)
+        const user=await User.findByPk(order.userId)
+        const courses=await Course.findAll()
 
 
+        var workbook=new ExcelJS.Workbook()
+        var worksheet=workbook.addWorksheet('Sheet 1')
+
+        worksheet.getCell('A1').value=order.orderNumber
+        worksheet.getCell('B1').value=user.name
+        worksheet.getCell('C1').value=order.date
+
+        const concatArray=order.content.concat(order.contentformmenu)
+        const countMap={}
+        concatArray.forEach(value=>{
+            countMap[value]=(countMap[value]||0)+1
+        })
+        console.log(countMap)
+        res.status(200).send(countMap)
+        
+
+
+    }catch(error){
+        console.log('Error: ',error)
+        res.status(500).send('Inter Server Error')
+    }
+})
 router.post('/bill',auth,(req,res)=>{
     
     generateExcel(res,req)
 })
-
-
 async function generateExcel(res,req){
     var workbook=new ExcelJS.Workbook()    
     

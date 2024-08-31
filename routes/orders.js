@@ -1,9 +1,9 @@
 const express=require('express')
 const router= express.Router()
-const {Order}=require('../models/order')
-const {User}=require('../models/user')
-const{Course}=require('../models/course')
-const{Menu}=require('../models/menu')
+const {Order,User,Course,Menu}=require('../models/models')
+//const {User}=require('../models/user')
+//const{Course}=require('../models/course')
+//const{Menu}=require('../models/menu')
 const transporter=require('../nodemail')
 const auth=require('../middleware/auth')
 const {Op}=require('sequelize')
@@ -135,6 +135,8 @@ router.post('/',auth,async(req,res)=>{
         }
 
         console.log('pre create order')
+
+        console.log(date)
 
         const newOrder=await Order.create({
             userId:client,

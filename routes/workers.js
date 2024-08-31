@@ -3,7 +3,7 @@ const router= express.Router()
 const Joi= require('joi')
 const config=require('config')
 const sequelize=require('../dbConnection')
-const {Worker}=require('../models/worker')
+const {Worker}=require('../models/models')
 const bcrypt=require('bcrypt')
 const _=require('lodash')
 const auth=require('../middleware/auth')
@@ -60,14 +60,15 @@ router.post('/',async(req,res)=>{
 
     try{
         var hashedPassword=await bcrypt.hash(req.body.password,10)
+        
         const newWorker=await Worker.create({
             name:req.body.name,
             password:hashedPassword,
             role:req.body.role
         })
-
-        const token=newWorker.generateJWT()
-        res.status(201).header('x-auth-token',token).json(_.pick(newWorker,['id','name','role']))
+        console.log(newWorker)
+        //const token=newWorker.generateJWT()
+        res.status(201).json(_.pick(newWorker,['id','name','role']))
     }catch(error){
         console.error('Error : ', error)
         res.status(500).send('Internal Server Error')

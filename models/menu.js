@@ -17,7 +17,11 @@ Menu.init({
     },
     price:{
         type:DataTypes.INTEGER
-    } 
+    },
+    visibility:{
+        type:DataTypes.BOOLEAN,
+        defaultValue:true
+    }
 },{
     sequelize,
     modelName:'Menu',

@@ -12,5 +12,5 @@ module.exports=function role(requiredRole){
             }
         }
     }
-    i
+    
 }

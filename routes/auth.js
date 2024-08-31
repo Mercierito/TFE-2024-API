@@ -4,8 +4,8 @@ const bcrypt=require('bcrypt')
 const _=require('lodash')
 
 
-const {Worker}=require('../models/worker')
-const {User}=require('../models/user')
+const {Worker,User}=require('../models/models')
+//const {User}=require('../models/user')
 
 router.post('/worker',async(req,res)=>{
 
