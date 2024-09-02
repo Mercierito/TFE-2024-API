@@ -342,31 +342,33 @@ async function generateExcel(res,req){
 
 
     const filename=`${billNumber} facture ${sum}.xlsx`
-    const filePath=`./factures/${filename}`
+    //const filePath=`./factures/${filename}`
 
     //res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     
     
 
-    try{
+   /* try{
         await fs.access('./factures')
         
 
     }catch(error){
         await fs.mkdir('./factures')
-    }
+    }*/
 
 
     try{
-        await workbook.xlsx.writeFile(filePath);
-    console.log('File written successfully');
+       /* await workbook.xlsx.writeFile(filePath);
+         console.log('File written successfully');*/
+
+         const fileContent=await workbook.xlsx.writeBuffer()
 
     // Send the file as a response
-    //res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
 
     // Stream the file to the response
-    const fileContent = await fs.readFile(filePath);
+    //const fileContent = await fs.readFile(filePath);
     res.send(fileContent);
 
         
