@@ -65,6 +65,7 @@ router.put('/',async(req,res)=>{
     console.log(req.body)
 
     try{
+        console.log("before user.findone for existing user")
         const existingUser=await User.findOne({
             where:{
                 name:req.body.nom,
@@ -72,17 +73,23 @@ router.put('/',async(req,res)=>{
                 address:`${req.body.adresse},${req.body.codePostal},${req.body.ville}`
             }
         })
+        console.log(existingUser.address)
 
         var password
 
         if(req.body.password){
+            console.log("start bcrypt")
              password=await bcrypt.hash(req.body.password,10)
         }else{
             return res.status(400).send('Bad request')
         }
+        console.log("after bcrypt")
         
         if(existingUser){
-            if(existingUser.password===''){
+            console.log("inside if(existingUser)")
+            if(existingUser.password.length >0){
+
+                console.log("modify existing user start")
                             
 
                     const updatedUser=await existingUser.update({
@@ -94,16 +101,18 @@ router.put('/',async(req,res)=>{
                         address:`${req.body.adresse},${req.body.codePostal},${req.body.ville}`,
                         phoneNumber: req.body.telephone
                     })
+                    console.log("after updating")
 
                     const token=existingUser.generateJWT()
                     console.log('TOKEN: ',token)
 
-                    res.status(201).header('x-auth-token',token).send(_.pick(existingUser,['id','mail','name']))
+                    res.status(201).header('x-auth-token',token).send(_.pick(updatedUser,['id','mail','name']))
                 
             }else{
                 return res.status(409).send('User already exists')
             }
         }else{
+            console.log("Else create newUser")
             const newUser=await User.create({
                 mail:req.body.email,
                 password:password,
