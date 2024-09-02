@@ -1,8 +1,7 @@
 const express=require('express')
 const router=express.Router()
 const Joi=require('joi')
-const config=require('config')
-const sequelize=require('../dbConnection')
+
 const{User}=require('../models/models')
 const bcrypt=require ('bcryptjs')
 const _=require('lodash')
@@ -73,7 +72,7 @@ router.put('/',async(req,res)=>{
                 address:`${req.body.adresse},${req.body.codePostal},${req.body.ville}`
             }
         })
-        console.log(existingUser.address)
+        
 
         var password
 
@@ -133,6 +132,8 @@ router.put('/',async(req,res)=>{
 
 
     }catch(error){
+        console.error(error)
+        return res.status(500).send("internal server error")
 
     }
 })

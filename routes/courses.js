@@ -37,4 +37,43 @@ router.get('/',async(req,res)=>{
     }
 })
 
+router.get('/visible', async(req,res)=>{
+    try{
+        const courses=await Course.findAll({
+            where:{
+                visibility:true
+            }
+        })
+
+        res.status(200).send(courses)
+    }catch(error){
+        console.error(error)
+        res.status(500).send('Internal server error')
+    }
+})
+
+router.patch('/',async(req,res)=>{
+    try{
+        const menuToModify=await Course.findOne({
+            where:{
+                id:req.body.id
+            }
+        })
+        if(!menuToModify){
+            return res.status(404).send("menu not found")
+        }
+        const newValue=!menuToModify.visibility
+        const updatedMenu=await menuToModify.update({
+            visibility:newValue
+        })
+
+        res.status(200).send(updatedMenu)
+
+
+    }catch(error){
+        console.error(error)
+        res.status(500).send('internal server error')
+    }
+})
+
 module.exports=router;
