@@ -65,16 +65,20 @@ async function generateExcel(res,req){
     const currentYear=date.getFullYear().toString().slice(-2)
     var formatedDate=format(date,'dd/MM/yyyy')
 
+    console.log("set date")
+
     var order=await Order.findOne({
         where:{
             id:req.body.orderId
         }
     })
+    console.log("get order")
     var bill=await Bill.findOne({
         where:{
             orderId:req.body.orderId
         }
     })
+    console.log("get bills")
 
     var billNumber='yy-xxx'
 
