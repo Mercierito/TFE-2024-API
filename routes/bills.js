@@ -362,6 +362,7 @@ async function generateExcel(res,req){
          console.log('File written successfully');*/
 
          const fileContent=await workbook.xlsx.writeBuffer()
+         console.log(fileContent)
 
     // Send the file as a response
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
