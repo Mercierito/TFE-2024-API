@@ -57,7 +57,9 @@ router.post('/bill',auth,(req,res)=>{
     generateExcel(res,req)
 })
 async function generateExcel(res,req){
-    var workbook=new ExcelJS.Workbook()    
+    console.log("start generate xl")
+    var workbook=new ExcelJS.Workbook() 
+    console.log("after creting workbook")   
     
     const date=new Date();
     const currentYear=date.getFullYear().toString().slice(-2)
@@ -231,7 +233,7 @@ async function generateExcel(res,req){
         name:'Calibri',
         size:11
     }
-
+console.log("after constant fields")
     
 //fin de constante
     
