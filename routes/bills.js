@@ -1,9 +1,9 @@
 const express=require('express')
 const router= express.Router()
 const fs=require('fs').promises
-const {Bill}=require('../models/bill')
+//const {Bill}=require('../models/bill')
 const ExcelJS=require('exceljs')
-const{Order,User,Course,Menu}=require('../models/models')
+const{Order,User,Course,Menu,Bill}=require('../models/models')
 //const{User}=require('../models/user')
 //const{Course}=require('../models/course')
 //const{Menu}=require('../models/menu')
