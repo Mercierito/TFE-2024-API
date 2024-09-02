@@ -74,7 +74,9 @@ app.get('/api/conf',(req,res)=>{
 }*/
 
 const port =process.env.PORT||7864
-app.listen(port,()=>console.log(`Listening on port ${port}`));
+const dburl=process.env.DATABASE_URL||"env varible unknown"
+app.listen(port,()=>console.log(`Listening on port ${port} and DB URL is ${dburl}`));
+
 
 /*async function startServer(){
   const server=https.createServer(options, app).listen(port,()=>{
