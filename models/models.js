@@ -1,17 +1,39 @@
 const {DataTypes, Sequelize}=require('sequelize')
 const jwt=require('jsonwebtoken')
 
-const sequelize=new Sequelize({
+const DATABASE_URL = 'postgres://u4m94q6tklcsh6:pb981454cdcb898de75c3c3467b015174bd82238004bb6539da3cf52293cffa5c@cah8ha8ra8h8i7.cluster-czz5s0kz4scl.eu-west-1.rds.amazonaws.com:5432/daq21oupij3e69';
+
+const sequelize = new Sequelize(DATABASE_URL, {
+    dialect: 'postgres',
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false, // Change to `true` in production with a valid SSL certificate
+      },
+    },
+    logging: false,
+    define: {
+      timestamps: false,
+    },
+  });
+
+/*const sequelize=new Sequelize({
     dialect:'postgres',
-    host:'localhost',
-    port:2022,
-    username:'postgres',
-    password:'postgres',
+    dialectOptions:{
+        ssl:{
+            require:true,
+            rejectUnauthorized:false
+        }
+    },
+    host:'cah8ha8ra8h8i7.cluster-czz5s0kz4scl.eu-west-1.rds.amazonaws.com',
+    port:5432,
+    username:'daq21oupij3e69',
+    password:'pb981454cdcb898de75c3c3467b015174bd82238004bb6539da3cf52293cffa5c',
     logging:false,
     define:{
         timestamps:false
     }
-})
+})*/
 
 const Menu=sequelize.define('menus',{
     id:{

@@ -64,9 +64,9 @@ const options={
 }
 
 const port =process.env.PORT||7864
-//app.listen(port,()=>console.log(`Listening on port ${port}`));
+app.listen(port,()=>console.log(`Listening on port ${port}`));
 
-async function startServer(){
+/*async function startServer(){
   const server=https.createServer(options, app).listen(port,()=>{
     console.log(`HTTPS server running on https://localhost:${port}`)
   })
@@ -80,5 +80,5 @@ async function startServer(){
 
 }
 
-startServer()
+startServer()*/
 
