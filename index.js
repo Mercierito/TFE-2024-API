@@ -15,9 +15,8 @@ const bills=require('./routes/bills')
 const auth=require('./routes/auth')
 const cors=require('cors')
 const{sequelize, Worker}=require('./models/models')
-const https=require('https')
-const fs=require('fs')
-const localtunnel=require('localtunnel')
+const bcrypt=require('bcryptjs')
+
 
     sequelize.sync({alter:true})
     .then(async() => {
