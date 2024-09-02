@@ -14,7 +14,7 @@ const courses=require('./routes/courses')
 const bills=require('./routes/bills')
 const auth=require('./routes/auth')
 const cors=require('cors')
-const{sequelize}=require('./models/models')
+const{sequelize, Worker}=require('./models/models')
 const https=require('https')
 const fs=require('fs')
 const localtunnel=require('localtunnel')
@@ -22,6 +22,17 @@ const localtunnel=require('localtunnel')
     sequelize.sync({alter:true})
     .then(async() => {
       console.log('Database synchronized.');
+
+      const workerCount=await Worker.count()
+      if(workerCount===0){
+        const hshedPassword=await bcrypt.hash('Test123*',10)
+        await Worker.create({
+          name:'Admin',
+          password:hshedPassword,
+          role:10
+        })
+        console.log('Default User created')
+      }
       
       
     })
@@ -58,10 +69,10 @@ app.get('/api/conf',(req,res)=>{
 
 
 
-const options={
+/*const options={
   key: fs.readFileSync('./certs/localhost-key.pem'),
   cert: fs.readFileSync('./certs/localhost-cert.pem')
-}
+}*/
 
 const port =process.env.PORT||7864
 app.listen(port,()=>console.log(`Listening on port ${port}`));
