@@ -281,8 +281,30 @@ router.put('/',auth,async(req,res)=>{
         return res.status(201).send(updatedOrder)
     }catch(error){
         console.error(error)
+        return res.status(500).send('Internal server error')
     }
 
+})
+
+router.delete('/',auth,async(req,res)=>{
+
+    console.log(req.body.id)
+    try{
+        const orderId=req.body.id
+        const order=await Order.findByPk(orderId)
+
+        if(!order)return res.status(404).send("Order not found")
+
+        await Order.destroy({
+            where:{id:orderId}
+        })
+
+        return res.status(200).send("Order deletion successful")
+
+    }catch(error){
+        console.error(error)
+        return res.status(500).send("Internal server error")
+    }
 })
 
 
