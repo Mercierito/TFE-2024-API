@@ -53,6 +53,17 @@ router.patch('/me',auth,async(req,res)=>{
     }
 })
 
+router.patch('/me/password',auth,async(req,res)=>{
+    try{
+        console.log(req.body)
+        var worker=await Worker.findByPk(req.decodedToken.id)
+        if(!worker) return res.status(404).send('User not found')
+
+    }catch(error){
+        return res.status(500).send('Internal server error')
+    }
+})
+
 
 router.post('/',async(req,res)=>{
     const{error}=ValidateWorker(req.body)

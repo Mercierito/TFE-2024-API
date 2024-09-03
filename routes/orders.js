@@ -7,6 +7,7 @@ const {Order,User,Course,Menu}=require('../models/models')
 const transporter=require('../nodemail')
 const auth=require('../middleware/auth')
 const {Op}=require('sequelize')
+const { update } = require('lodash')
 //const bcrypt=require('bcrypt')
 
 router.get('/',auth,async(req,res)=>{
@@ -218,6 +219,70 @@ router.patch('/status',async(req,res)=>{
         console.error('Error updating status ', error)
         res.status(500).send('Internal Server Error')
     }
+})
+
+router.put('/',auth,async(req,res)=>{
+    console.log("reqbody: ",req.body)
+
+    try{
+        const orderToUpdate=await Order.findByPk(req.body.id)
+        console.log(orderToUpdate)
+        if(!orderToUpdate)return res.status(404).send("Order not found")
+        const{client,content,contentFromMenu,menus,status,date,address,type}=req.body
+
+        var price=0
+        try{
+            console.log('try cost')
+            const Courses=await Course.findAll()
+            const Menus=await Menu.findAll()
+            content.forEach(id=>{                
+                const course=Courses.find((course)=>course.id===id)                
+                if(course){
+                    price+=course.price
+                }
+            })
+            
+            menus.forEach(id=>{
+                const menu=Menus.find(menu=>menu.id===id)
+                if(menu){
+                    price+=menu.price
+                }
+            })
+
+            console.log('Prix de la commande: ', price)           
+
+        }catch(error){
+            console.log('Error : ',error)
+        }
+
+
+        var updatedStatus=0
+
+        if(orderToUpdate.status<=1){
+            updatedStatus=1
+        }else{updatedStatus=orderToUpdate.status-1}
+
+
+
+        const updatedOrder=await orderToUpdate.update({
+            orderNumber:orderToUpdate.orderNumber,
+            userId:client,
+            content:content,
+            contentFromMenu:contentFromMenu,
+            menu:menus,
+            date:date,
+            status:updatedStatus,
+            address:address,
+            type:type,
+            price:price
+
+        })
+        console.log("UPDATED: ",updatedOrder)
+        return res.status(201).send(updatedOrder)
+    }catch(error){
+        console.error(error)
+    }
+
 })
 
 
