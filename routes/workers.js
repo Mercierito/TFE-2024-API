@@ -107,6 +107,61 @@ router.post('/login',async(req,res)=>{
     return res.status(200).json(worker.id)
 })
 
+router.delete('/',auth,async(req,res)=>{
+
+    try{
+    console.log(req.body.workerId)
+    const workerToDelete=await Worker.findByPk(req.body.workerId)
+
+    if(!workerToDelete)return res.status(404).send('Worker not found')
+
+    await Worker.destroy({
+        where:{id:req.body.workerId}
+    })
+    return res.status(200).send("Worker deletion successful")
+
+    }catch(e){
+        console.error(e)
+        return res.status(500).send('Internal server error')
+    }    
+})
+
+router.patch('/up',auth,async(req,res)=>{
+    try{
+        const workerToUpRole=await Worker.findByPk(req.body.workerId)
+        if(!workerToUpRole)return res.status(404).send('worker not found')
+        
+        var newRole=workerToUpRole.role+1
+        if(newRole>3)newRole=3
+        const updatedWorker=await workerToUpRole.update({
+            role:newRole
+        })
+
+        return res.status(201).send(updatedWorker)
+    }catch(e){
+        console.error(e)
+        return res.status(500).send('Internal server error')
+    }
+})
+
+router.patch('/down',auth,async(req,res)=>{
+    try{
+        const workerToUpRole=await Worker.findByPk(req.body.workerId)
+        if(!workerToUpRole)return res.status(404).send('worker not found')
+        
+        var newRole=workerToUpRole.role-1
+        if(newRole<0)newRole=0
+        const updatedWorker=await workerToUpRole.update({
+            role:newRole
+        })
+
+        return res.status(201).send(updatedWorker)
+    }catch(e){
+        console.error(e)
+        return res.status(500).send('Internal server error')
+    }
+})
+
 
 
 function ValidateWorker(worker){
