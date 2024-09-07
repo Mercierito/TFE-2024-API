@@ -1,6 +1,7 @@
 const express=require('express')
 const router=express.Router()
 const Joi=require('joi')
+const{Op}=require('sequelize')
 
 const{User}=require('../models/models')
 const bcrypt=require ('bcryptjs')
@@ -12,7 +13,11 @@ const authMiddleware=require('../middleware/authMiddleware')
 router.get('/',authMiddleware.auth,async(req,res)=>{
 
     try{
-        const users=await User.findAll()        
+        const users = await User.findAll({
+            where: {
+              name: { [Op.ne]: 'Supprimé' } // 'Op.ne' means 'not equal to' in Sequelize
+            }
+          });        
         
         res.status(200).send(users)
     }catch(error){
@@ -225,6 +230,66 @@ router.patch('/me',auth,async(req,res)=>{
     
 })
 
+router.patch('/me/password',auth,async(req,res)=>{
+    try{
+        const {currentPassword, newPassword}=req.body
+        if(!currentPassword||!newPassword){
+            return res.status(400).send('Current and new password required')
+        }
+       
+        var worker=await User.findByPk(req.decodedToken.id)
+        if(!worker) return res.status(404).send('User not found')
+
+        const isMatch=await bcrypt.compare(currentPassword,worker.password)
+        if(!isMatch) return res.status(400).send('Incorrect current password')
+
+        if(newPassword.length<8){
+            return res.status(400).send('New password must be at least 8character long')
+        }
+        
+        const hashedPassword=await bcrypt.hash(newPassword,10)
+        worker.password=hashedPassword
+        await worker.save()
+        return res.status(200).send('Password updated successfully')
+        
+
+    }catch(error){
+        return res.status(500).send('Internal server error')
+    }
+})
+
+router.delete('/me',auth,async(req,res)=>{
+    try {
+        // Get the user ID from the decoded token
+        const userId = req.decodedToken.id;
+        console.log("entering")
+        console.log(userId)
+        
+        const user = await User.findByPk(userId);   
+        console.log(user)    
+
+    
+        if (!user) {
+          return res.status(404).send({ error: 'User not found' });
+        }
+
+        user.name='Supprimé'
+        user.address='Supprimé'
+        user.mail=`${userId}@id.be`
+        user.tva='Supprimé'
+        user.phoneNumber='Supprimé'
+
+        //console.log(user)
+
+        await user.save()
+    
+        res.status(200).send({ message: 'User data replaced successfully', user });
+      } catch (error) {
+        res.status(500).send({ error: 'Internal Server Error' });
+      }
+});
+
+
 router.post('/sendAd',auth,async(req,res)=>{
     console.log('got hit')
     console.log(req.body.text)
@@ -234,7 +299,8 @@ router.post('/sendAd',auth,async(req,res)=>{
     
         const users=await User.findAll({
             where:{
-                pub:true
+                pub:true,
+                name: { [Op.ne]: 'Supprimé' }
             }
         })
         const message={

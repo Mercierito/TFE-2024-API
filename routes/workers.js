@@ -27,7 +27,7 @@ router.get('/me',auth,async(req,res)=>{
     try{
         var worker = await Worker.findByPk(req.decodedToken.id)
         const responseData={
-            ..._.pick(worker,['name'])
+            ..._.pick(worker,['name','role'])
         }
         return res.status(200).send(responseData)
     }catch(error){
@@ -55,9 +55,26 @@ router.patch('/me',auth,async(req,res)=>{
 
 router.patch('/me/password',auth,async(req,res)=>{
     try{
-        console.log(req.body)
+        const {currentPassword, newPassword}=req.body
+        if(!currentPassword||!newPassword){
+            return res.status(400).send('Current and new password required')
+        }
+       
         var worker=await Worker.findByPk(req.decodedToken.id)
         if(!worker) return res.status(404).send('User not found')
+
+        const isMatch=await bcrypt.compare(currentPassword,worker.password)
+        if(!isMatch) return res.status(400).send('Incorrect current password')
+
+        if(newPassword.length<8){
+            return res.status(400).send('New password must be at least 8character long')
+        }
+        
+        const hashedPassword=await bcrypt.hash(newPassword,10)
+        worker.password=hashedPassword
+        await worker.save()
+        return res.status(200).send('Password updated successfully')
+        
 
     }catch(error){
         return res.status(500).send('Internal server error')
