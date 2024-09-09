@@ -78,7 +78,3 @@ describe('GET /me', () => {
     expect(response.text).toBe('Internal Server Error');
   });
 });
-
-
-
-

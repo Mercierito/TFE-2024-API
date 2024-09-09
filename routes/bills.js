@@ -9,7 +9,7 @@ const{format}=require('date-fns')
 const auth=require('../middleware/auth')
 const authMiddleware=require('../middleware/authMiddleware')
 
-router.get('/bills',authMiddleware.auth,async(req,res)=>{
+router.get('/bills',auth,async(req,res)=>{
     try{
         const bills=await Bill.findAll()
         res.status(200).send(bills)
