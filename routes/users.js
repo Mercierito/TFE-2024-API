@@ -90,8 +90,9 @@ router.put('/',async(req,res)=>{
         console.log("after bcrypt")
         
         if(existingUser){
+            console.log(existingUser)
             console.log("inside if(existingUser)")
-            if(existingUser.password.length >0){
+            if(existingUser.password.length ==0){
 
                 console.log("modify existing user start")
                             
@@ -278,6 +279,7 @@ router.delete('/me',auth,async(req,res)=>{
         user.mail=`${userId}@id.be`
         user.tva='Supprimé'
         user.phoneNumber='Supprimé'
+        user.pub=false
 
         //console.log(user)
 
